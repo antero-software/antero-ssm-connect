@@ -1,0 +1,5 @@
+profiles:
+  account_name:
+    name: "My Client - Production"
+    instanceID: "i-1234567890"
+    profile: "aws profile in ~/.aws/config"
