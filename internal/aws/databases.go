@@ -42,8 +42,14 @@ func FetchDBs(profile string) ([]DB, error) {
 	eg.Go(func() error {
 		var result []DB
 
-		clusters, _ := rdsClient.DescribeDBClusters(ctx, &rds.DescribeDBClustersInput{})
-		subnets, _ := rdsClient.DescribeDBSubnetGroups(ctx, &rds.DescribeDBSubnetGroupsInput{})
+		clusters, err := rdsClient.DescribeDBClusters(ctx, &rds.DescribeDBClustersInput{})
+		if err != nil {
+			return fmt.Errorf("failed to describe DB clusters: %w", err)
+		}
+		subnets, err := rdsClient.DescribeDBSubnetGroups(ctx, &rds.DescribeDBSubnetGroupsInput{})
+		if err != nil {
+			return fmt.Errorf("failed to describe DB subnet groups: %w", err)
+		}
 
 		subnetToVpc := map[string]string{}
 		for _, sg := range subnets.DBSubnetGroups {
