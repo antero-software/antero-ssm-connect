@@ -18,5 +18,5 @@
 ## Installation
 
 ```bash
-brew tap antero-software/tap
+brew tap antero-software/antero-ssm-connect
 brew install antero-ssm-connect
