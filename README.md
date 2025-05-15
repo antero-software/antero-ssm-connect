@@ -20,3 +20,26 @@
 ```bash
 brew tap antero-software/antero-ssm-connect
 brew install antero-ssm-connect
+```
+
+## Example Commands
+
+### 🧩 Start SSM shell session to EC2 instance (no port-forward)
+```bash
+aws-ssm-connect --ssm
+```
+
+### 🚀 Port-forward to RDS or ElastiCache on a custom local port
+```bash
+aws-ssm-connect --db-port-forward
+```
+
+### 📋 List all active tunnels (by PID)
+```bash
+aws-ssm-connect --list
+```
+
+### 💥 Kill all active sessions
+```bash
+aws-ssm-connect --kill-all
+```
