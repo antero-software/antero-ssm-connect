@@ -22,6 +22,25 @@ brew tap antero-software/antero-ssm-connect
 brew install antero-ssm-connect
 ```
 
+## Requirements
+
+Make sure the following are installed and configured before using:
+
+- ✅ [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) — Install Guide  
+- ✅ [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) — Required for SSM sessions 
+- ✅ AWS SSO login configured in `~/.aws/config`
+- ✅ SSM agent running on EC2 instances
+- ✅ Target EC2 instances must:
+- Be registered in SSM (visible in aws ssm describe-instance-information)
+  - Have the AmazonSSMManagedInstanceCore policy
+  - Have internal access to the target DB (RDS/ElastiCache)
+
+### You can verify SSO with:
+```bash
+aws sso login --profile your-profile
+aws sts get-caller-identity --profile your-profile
+```
+
 ## Example Commands
 
 ### 🧩 Start SSM shell session to EC2 instance (no port-forward)
