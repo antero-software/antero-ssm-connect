@@ -38,7 +38,11 @@ func SavePID(info PIDInfo) error {
 func ListPIDs() error {
 	data, err := os.ReadFile(pidsFilePath)
 	if err != nil {
-		return fmt.Errorf("could not read pids file: %w", err)
+		if os.IsNotExist(err) {
+			fmt.Println("No active port-forward sessions found.")
+			return nil
+		}
+		return fmt.Errorf("list sessions failed: could not read pids file: %w", err)
 	}
 
 	var pids []PIDInfo
