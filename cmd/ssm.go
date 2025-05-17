@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/antero-software/antero-ssm-connect/internal/aws"
+	"github.com/antero-software/antero-ssm-connect/internal/ui"
 	"github.com/manifoldco/promptui"
 )
 
@@ -55,4 +56,18 @@ func StartSSMSession(profile string) error {
 	cmd.Stdin = os.Stdin
 
 	return cmd.Run()
+}
+
+func StartSSMSessionWithPrompt() error {
+	profiles, err := aws.FetchProfiles()
+	if err != nil {
+		return err
+	}
+
+	profile, err := ui.PromptProfile(profiles)
+	if err != nil {
+		return err
+	}
+
+	return StartSSMSession(profile)
 }

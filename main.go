@@ -57,9 +57,15 @@ func main() {
 	case *profile != "" && *filter != "":
 		cmd.QuickConnect(*profile, *filter, *port)
 	case *ssm:
-		err := cmd.StartSSMSession(*profile)
-		if err != nil {
-			log.Fatalf("SSM session failed: %v", err)
+		if *profile != "" {
+			err := cmd.StartSSMSession(*profile)
+			if err != nil {
+				log.Fatalf("SSM session failed: %v", err)
+			}
+		} else {
+			if err := cmd.StartSSMSessionWithPrompt(); err != nil {
+				log.Fatalf("SSM session failed: %v", err)
+			}
 		}
 	default:
 		if err := cmd.Interactive(); err != nil {

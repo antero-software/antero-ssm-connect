@@ -7,10 +7,68 @@ import (
 	"github.com/antero-software/antero-ssm-connect/internal/aws"
 	"github.com/antero-software/antero-ssm-connect/internal/tunnel"
 	"github.com/antero-software/antero-ssm-connect/internal/ui"
+	"github.com/manifoldco/promptui"
 )
 
-// Interactive mode with profile, instance and DB prompts
+type Action string
+
+const (
+	ActionSSMSession  Action = "🧩 Start a shell session (SSM)"
+	ActionPortForward Action = "🔌 Port-forward to a database"
+	ActionList        Action = "📋 List active sessions"
+	ActionKillAll     Action = "❌ Kill all sessions"
+	ActionExit        Action = "🔚 Exit"
+)
+
+// Interactive entrypoint — shows menu
 func Interactive() error {
+	action, err := promptMainAction()
+	if err != nil {
+		// graceful cancel on Ctrl+C
+		fmt.Println("\n👋 Cancelled.")
+		return nil
+	}
+
+	switch action {
+	case ActionSSMSession:
+		return StartSSMSessionWithPrompt()
+	case ActionPortForward:
+		return runPortForward()
+	case ActionList:
+		ListSessions()
+		return nil
+	case ActionKillAll:
+		KillAllSessions()
+		return nil
+	case ActionExit:
+		fmt.Println("👋 Goodbye!")
+		return nil
+	default:
+		return fmt.Errorf("unknown action")
+	}
+}
+
+// Menu
+func promptMainAction() (Action, error) {
+	options := []Action{
+		ActionPortForward,
+		ActionSSMSession,
+		ActionList,
+		ActionKillAll,
+		ActionExit,
+	}
+
+	prompt := promptui.Select{
+		Label: "What would you like to do?",
+		Items: options,
+	}
+
+	_, result, err := prompt.Run()
+	return Action(result), err
+}
+
+// Port-forward wizard (moved from old Interactive)
+func runPortForward() error {
 	profiles, err := aws.FetchProfiles()
 	if err != nil {
 		return fmt.Errorf("load profiles failed: %w", err)
@@ -62,12 +120,7 @@ func Interactive() error {
 		log.Printf("⚠️ failed to save last selection: %v", err)
 	}
 
-	localPort := db.Port // you can parametrize this if needed
+	localPort := db.Port
 
-	err = tunnel.StartPortForward(profile, instance.Name, instance.ID, db.Endpoint, db.Port, localPort)
-	if err != nil {
-		return fmt.Errorf("port forwarding failed: %w", err)
-	}
-
-	return nil
+	return tunnel.StartPortForward(profile, instance.Name, instance.ID, db.Endpoint, db.Port, localPort)
 }
