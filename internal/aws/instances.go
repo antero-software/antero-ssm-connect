@@ -34,7 +34,10 @@ func FetchInstances(profile string) ([]Instance, error) {
 		if err != nil {
 			// Handle expired SSO token
 			if strings.Contains(err.Error(), "token expired") ||
-				strings.Contains(err.Error(), "InvalidGrantException") {
+				strings.Contains(err.Error(), "InvalidGrantException") ||
+				strings.Contains(err.Error(), "failed to read cached SSO token file") ||
+				strings.Contains(err.Error(), "failed to refresh cached credentials") {
+
 				if err := EnsureSSOLogin(profile); err != nil {
 					return nil, fmt.Errorf("SSO login failed: %w", err)
 				}
