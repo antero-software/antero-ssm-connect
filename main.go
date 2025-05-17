@@ -21,10 +21,10 @@ func main() {
 	ssm := flag.Bool("ssm", false, "Start standard SSM shell session to EC2")
 	help := flag.Bool("help", false, "Show usage information")
 	version := flag.Bool("version", false, "Show version")
-	dbproxy := flag.Bool("db-port-forward", false, "Start port-forward to DB proxy via EC2")
+	dbPortForward := flag.Bool("db-port-forward", false, "Start port-forward to DB proxy via EC2")
 	flag.Parse()
 
-	if *ssm || *dbproxy || (*profile == "" && *filter != "") {
+	if *ssm || *dbPortForward || (*profile == "" && *filter != "") {
 		if err := cmd.SelectProfileIfEmpty(profile); err != nil {
 			log.Fatalf("profile selection failed: %v", err)
 		}
@@ -50,9 +50,9 @@ func main() {
 		cmd.KillSession(*kill)
 	case *killAll:
 		cmd.KillAllSessions()
-	case *dbproxy:
+	case *dbPortForward:
 		if err := cmd.ConnectToDBProxy(*profile, *port); err != nil {
-			log.Fatalf("DB proxy connection failed: %v", err)
+			log.Fatalf("DB port forward failed: %v", err)
 		}
 	case *profile != "" && *filter != "":
 		cmd.QuickConnect(*profile, *filter, *port)
