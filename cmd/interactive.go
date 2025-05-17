@@ -51,8 +51,8 @@ func Interactive() error {
 // Menu
 func promptMainAction() (Action, error) {
 	options := []Action{
-		ActionPortForward,
 		ActionSSMSession,
+		ActionPortForward,
 		ActionList,
 		ActionKillAll,
 		ActionExit,
