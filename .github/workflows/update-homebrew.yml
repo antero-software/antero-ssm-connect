@@ -22,14 +22,26 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: homebrew-tap
 
+      - name: Get tag from triggering commit
+        run: |
+          SHA=${{ github.event.workflow_run.head_sha }}
+          TAG_NAME=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/git/refs/tags | \
+            jq -r '.[] | select(.object.sha=="'"$SHA"'") | .ref' | sed 's|refs/tags/||')
+
+          if [ -z "$TAG_NAME" ]; then
+            echo "❌ Tag not found for SHA $SHA"
+            exit 1
+          fi
+
+          echo "VERSION=$TAG_NAME" >> $GITHUB_ENV
+
       - name: Download release binaries and compute hashes
         run: |
-          VERSION=${GITHUB_REF##*/}
           curl -LO https://github.com/antero-software/antero-ssm-connect/releases/download/$VERSION/antero-ssm-connect-darwin-arm64.tar.gz
           curl -LO https://github.com/antero-software/antero-ssm-connect/releases/download/$VERSION/antero-ssm-connect-darwin-amd64.tar.gz
           echo "ARM_SHA=$(shasum -a 256 antero-ssm-connect-darwin-arm64.tar.gz | awk '{print $1}')" >> $GITHUB_ENV
           echo "AMD_SHA=$(shasum -a 256 antero-ssm-connect-darwin-amd64.tar.gz | awk '{print $1}')" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Update Formula file
         run: |
