@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 
 	"github.com/antero-software/antero-ssm-connect/internal/aws"
 	"github.com/antero-software/antero-ssm-connect/internal/ui"
@@ -43,19 +44,18 @@ func StartSSMSession(profile string) error {
 
 	fmt.Printf("\n✅ Starting SSM shell session to: %s (%s)\n\n", instance.Name, instance.ID)
 
-	cmd := exec.Command(
+	awsPath, err := exec.LookPath("aws")
+	if err != nil {
+		return fmt.Errorf("aws CLI not found in PATH: %w", err)
+	}
+
+	return syscall.Exec(awsPath, []string{
 		"aws", "ssm", "start-session",
 		"--profile", profile,
 		"--target", instance.ID,
 		"--document-name", "AWS-StartInteractiveCommand",
 		"--parameters", "command=bash",
-	)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-
-	return cmd.Run()
+	}, os.Environ())
 }
 
 func StartSSMSessionWithPrompt() error {

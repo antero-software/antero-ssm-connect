@@ -3,9 +3,6 @@ package main
 import (
 	"flag"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/antero-software/antero-ssm-connect/cmd"
 )
@@ -29,14 +26,6 @@ func main() {
 			log.Fatalf("profile selection failed: %v", err)
 		}
 	}
-
-	// Graceful cleanup on Ctrl+C or SIGTERM
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-		cmd.CleanupAndExit()
-	}()
 
 	// Command dispatch
 	switch {
