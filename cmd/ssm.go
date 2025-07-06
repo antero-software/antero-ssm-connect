@@ -54,7 +54,7 @@ func StartSSMSession(profile string) error {
 		"--profile", profile,
 		"--target", instance.ID,
 		"--document-name", "AWS-StartInteractiveCommand",
-		"--parameters", "command=bash",
+		"--parameters", `{"command":["cd /home/ssm-user && /bin/bash"]}`,
 	}, os.Environ())
 }
 
