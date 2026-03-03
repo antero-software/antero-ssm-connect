@@ -30,3 +30,6 @@ go.work.sum
 
 # MacOS
 .DS_Store
+
+# Claude
+.claude/
