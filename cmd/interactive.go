@@ -14,6 +14,7 @@ type Action string
 
 const (
 	ActionSSMSession  Action = "🧩 Start a shell session (SSM)"
+	ActionECSSession  Action = "🐳 Connect to an ECS container"
 	ActionPortForward Action = "🔌 Port-forward to a database"
 	ActionList        Action = "📋 List active sessions"
 	ActionKillAll     Action = "❌ Kill all sessions"
@@ -32,6 +33,8 @@ func Interactive() error {
 	switch action {
 	case ActionSSMSession:
 		return StartSSMSessionWithPrompt()
+	case ActionECSSession:
+		return StartECSSessionWithPrompt("")
 	case ActionPortForward:
 		return runPortForward()
 	case ActionList:
@@ -52,6 +55,7 @@ func Interactive() error {
 func promptMainAction() (Action, error) {
 	options := []Action{
 		ActionSSMSession,
+		ActionECSSession,
 		ActionPortForward,
 		ActionList,
 		ActionKillAll,

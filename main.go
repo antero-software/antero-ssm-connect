@@ -16,12 +16,14 @@ func main() {
 	kill := flag.Int("kill", 0, "Kill a port-forward session by PID")
 	killAll := flag.Bool("kill-all", false, "Kill all active port-forward sessions")
 	ssm := flag.Bool("ssm", false, "Start standard SSM shell session to EC2")
+	ecs := flag.Bool("ecs", false, "Start interactive bash session on an ECS container")
+	cluster := flag.String("cluster", "", "ECS cluster name or ARN (optional, skips cluster selection)")
 	help := flag.Bool("help", false, "Show usage information")
 	version := flag.Bool("version", false, "Show version")
 	dbPortForward := flag.Bool("db-port-forward", false, "Start port-forward to DB proxy via EC2")
 	flag.Parse()
 
-	if *ssm || *dbPortForward || (*profile == "" && *filter != "") {
+	if *ssm || *ecs || *dbPortForward || (*profile == "" && *filter != "") {
 		if err := cmd.SelectProfileIfEmpty(profile); err != nil {
 			log.Fatalf("profile selection failed: %v", err)
 		}
@@ -54,6 +56,16 @@ func main() {
 		} else {
 			if err := cmd.StartSSMSessionWithPrompt(); err != nil {
 				log.Fatalf("SSM session failed: %v", err)
+			}
+		}
+	case *ecs:
+		if *profile != "" {
+			if err := cmd.StartECSSession(*profile, *cluster); err != nil {
+				log.Fatalf("ECS session failed: %v", err)
+			}
+		} else {
+			if err := cmd.StartECSSessionWithPrompt(*cluster); err != nil {
+				log.Fatalf("ECS session failed: %v", err)
 			}
 		}
 	default:
