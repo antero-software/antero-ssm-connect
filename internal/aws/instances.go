@@ -91,3 +91,15 @@ func FetchInstances(profile string) ([]Instance, error) {
 	})
 	return result, nil
 }
+
+// ResolveRegion returns the AWS region configured for the given profile.
+func ResolveRegion(profile string) (string, error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithSharedConfigProfile(profile))
+	if err != nil {
+		return "", fmt.Errorf("load config failed: %w", err)
+	}
+	if cfg.Region == "" {
+		return "", fmt.Errorf("no region configured for profile %q", profile)
+	}
+	return cfg.Region, nil
+}

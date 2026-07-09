@@ -8,6 +8,7 @@ import (
 
 	"github.com/antero-software/antero-ssm-connect/internal/aws"
 	"github.com/antero-software/antero-ssm-connect/internal/tunnel"
+	"github.com/antero-software/antero-ssm-connect/internal/utils"
 )
 
 // QuickConnect establishes a port-forward by filtering instance + selecting DB in same VPC
@@ -44,7 +45,7 @@ func QuickConnect(profile, filter string, overridePort int) {
 		log.Fatalf("no writer database found for selected instance")
 	}
 
-	localPort := selectedDB.Port
+	localPort := utils.LocalPortFor(selectedDB.Endpoint)
 	if overridePort != 0 {
 		localPort = strconv.Itoa(overridePort)
 	}

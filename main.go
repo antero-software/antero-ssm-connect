@@ -21,9 +21,11 @@ func main() {
 	help := flag.Bool("help", false, "Show usage information")
 	version := flag.Bool("version", false, "Show version")
 	dbPortForward := flag.Bool("db-port-forward", false, "Start port-forward to DB proxy via EC2")
+	dbeaverSync := flag.Bool("dbeaver", false, "Generate/update DBeaver connections for discovered databases")
+	dbeaverPath := flag.String("dbeaver-path", "", "Override path to DBeaver's data-sources.json (optional)")
 	flag.Parse()
 
-	if *ssm || *ecs || *dbPortForward || (*profile == "" && *filter != "") {
+	if *ssm || *ecs || *dbPortForward || *dbeaverSync || (*profile == "" && *filter != "") {
 		if err := cmd.SelectProfileIfEmpty(profile); err != nil {
 			log.Fatalf("profile selection failed: %v", err)
 		}
@@ -44,6 +46,10 @@ func main() {
 	case *dbPortForward:
 		if err := cmd.ConnectToDBProxy(*profile, *port); err != nil {
 			log.Fatalf("DB port forward failed: %v", err)
+		}
+	case *dbeaverSync:
+		if err := cmd.SyncDBeaverConfig(*profile, *dbeaverPath); err != nil {
+			log.Fatalf("DBeaver sync failed: %v", err)
 		}
 	case *profile != "" && *filter != "":
 		cmd.QuickConnect(*profile, *filter, *port)

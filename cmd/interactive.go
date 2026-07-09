@@ -7,6 +7,7 @@ import (
 	"github.com/antero-software/antero-ssm-connect/internal/aws"
 	"github.com/antero-software/antero-ssm-connect/internal/tunnel"
 	"github.com/antero-software/antero-ssm-connect/internal/ui"
+	"github.com/antero-software/antero-ssm-connect/internal/utils"
 	"github.com/manifoldco/promptui"
 )
 
@@ -124,7 +125,7 @@ func runPortForward() error {
 		log.Printf("⚠️ failed to save last selection: %v", err)
 	}
 
-	localPort := db.Port
+	localPort := utils.LocalPortFor(db.Endpoint)
 
 	return tunnel.StartPortForward(profile, instance.Name, instance.ID, db.Endpoint, db.Port, localPort)
 }

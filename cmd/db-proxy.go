@@ -8,6 +8,7 @@ import (
 	"github.com/antero-software/antero-ssm-connect/internal/aws"
 	"github.com/antero-software/antero-ssm-connect/internal/tunnel"
 	"github.com/antero-software/antero-ssm-connect/internal/ui"
+	"github.com/antero-software/antero-ssm-connect/internal/utils"
 	"github.com/manifoldco/promptui"
 )
 
@@ -72,7 +73,7 @@ func ConnectToDBProxy(profile string, port int) error {
 	}
 
 	selectedDB := candidates[dbIdx]
-	localPort := selectedDB.Port
+	localPort := utils.LocalPortFor(selectedDB.Endpoint)
 	if port != 0 {
 		localPort = fmt.Sprint(port)
 	}

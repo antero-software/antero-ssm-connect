@@ -11,6 +11,7 @@ Usage:
   antero-ssm-connect --profile <profile> --filter <keyword>   # Quick connect to database
   antero-ssm-connect --ssm --profile <profile>                # Start SSM shell session to EC2
   antero-ssm-connect --db-port-forward --profile <profile>    # Port-forward to a selected DB proxy via EC2
+  antero-ssm-connect --dbeaver --profile <profile>             # Sync discovered databases into DBeaver
   antero-ssm-connect --list                                   # List active port-forward sessions
   antero-ssm-connect --kill <pid>                             # Kill a specific port-forward session by PID
   antero-ssm-connect --kill-all                               # Kill all active port-forward sessions
@@ -23,6 +24,8 @@ Flags:
 --port               Local port override (optional)
 --ssm                Start standard SSM shell session to EC2 instance
 --db-port-forward    Port-forward to a selected RDS proxy via EC2
+--dbeaver            Generate/update DBeaver connections for discovered databases
+--dbeaver-path       Override path to DBeaver's data-sources.json (optional)
 --list               Show active port-forward sessions
 --kill               Kill a session by PID
 --kill-all           Kill all active sessions

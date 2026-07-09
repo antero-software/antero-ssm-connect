@@ -14,6 +14,7 @@
 - 💥 Kill all tunnels with `--kill-all`
 - 🧹 Automatically cleans up dead sessions
 - ⚠️ Prevents local port conflicts
+- 🗄️ Centralized DBeaver connections via `--dbeaver` — native AWS SSM tunnel, same connections for the whole team (DBeaver paid editions only)
 
 ## Installation
 
@@ -62,3 +63,31 @@ aws-ssm-connect --list
 ```bash
 aws-ssm-connect --kill-all
 ```
+
+### 🗄️ Centralize DBeaver connections for the team
+```bash
+aws-ssm-connect --dbeaver --profile your-profile
+```
+Requires **DBeaver Enterprise/Ultimate/Lite/Team Edition** — the native AWS SSM tunnel handler
+this relies on isn't in DBeaver Community.
+
+Discovers every RDS/Aurora/ElastiCache database visible to the profile, matches each one to the
+SSM-managed EC2 instance in its VPC, and writes them straight into DBeaver's own
+`data-sources.json`:
+- One **network profile** per bastion EC2 instance (`ssm.instance.id` + region), shared by every
+  database behind it.
+- One **connection** per database, pointing at its real endpoint/port with DBeaver's native
+  `AWS SSM` tunnel handler enabled — DBeaver opens the tunnel itself on connect, no separate
+  `--db-port-forward` process required.
+
+Supported engines: PostgreSQL, MySQL/MariaDB, Redis. SQL Server/Oracle/MongoDB/Memcached are
+skipped — no confirmed DBeaver driver id for them yet.
+
+The one manual step per network profile (not per connection): open it once in DBeaver under
+*Network configurations → AWS SSM* and pick a **Credentials** method (e.g. "AWS profile"). That
+lives in DBeaver's encrypted credential store, which this tool intentionally doesn't touch —
+instance ID and region are already filled in.
+
+Close DBeaver (or refresh the Database Navigator afterwards) before running this, and pass
+`--dbeaver-path` to point at a non-default `data-sources.json` if auto-detection picks the
+wrong workspace.
